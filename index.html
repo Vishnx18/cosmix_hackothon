@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Rocket Flight Control System</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <!-- Parallax Background Elements -->
+    <div id="parallax-bg">
+        <div class="layer layer-stars-1"></div>
+        <div class="layer layer-stars-2"></div>
+        <div class="layer layer-clouds"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1 class="glitch" data-text="Flight Control System">Intelligent Rocket<br>Flight Control System</h1>
+            <p class="subtitle">Real-time physics-based rocket optimization and telemetry.</p>
+            <div class="rocket-animation-container">
+                <i class="fa-solid fa-space-shuttle main-rocket"></i>
+            </div>
+            <button class="btn-glow" id="start-btn">Initiate Sequence</button>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about hidden-section" id="about">
+        <h2>Mission Overview</h2>
+        <div class="cards-container">
+            <div class="info-card">
+                <i class="fa-solid fa-wind"></i>
+                <h3>The Challenge</h3>
+                <p>Atmospheric drag, Max-Q aerodynamic stress, and fuel inefficiencies pose critical threats during launch velocity curves.</p>
+            </div>
+            <div class="info-card">
+                <i class="fa-solid fa-microchip"></i>
+                <h3>The Solution</h3>
+                <p>An intelligent AI-assisted control system that continually optimizes thrust vectors and throttle profiles.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dashboard -->
+    <section class="dashboard hidden-section" id="dashboard">
+        <h2 class="section-title">Telemetry & Control Station</h2>
+        
+        <div class="dashboard-grid">
+            <!-- INPUT FORM -->
+            <div class="glass-panel input-panel">
+                <h3><i class="fa-solid fa-sliders"></i> System Parameters</h3>
+                <form id="sim-form">
+                    
+                    <div class="input-group-container">
+                        <div class="input-group">
+                            <h4><i class="fa-solid fa-rocket"></i> Flight Parameters</h4>
+                            <label>Altitude (m): <span id="val-alt">0</span></label>
+                            <input type="range" id="param-alt" min="0" max="500000" value="0">
+                            
+                            <label>Velocity (m/s): <span id="val-vel">0</span></label>
+                            <input type="range" id="param-vel" min="0" max="10000" value="0">
+                            
+                            <label>Mass (kg): <input type="number" id="param-mass" value="100000"></label>
+                            <label>Flight Angle (°): <input type="number" id="param-angle" value="90"></label>
+                        </div>
+
+                        <div class="input-group">
+                            <h4><i class="fa-solid fa-fire"></i> Engine</h4>
+                            <label>Throat Area (m²): <input type="number" id="param-throat" value="0.2" step="0.01"></label>
+                            <label>Chamber Pressure (Pa): <input type="number" id="param-pressure" value="10000000"></label>
+                            <label>Chamber Temp (K): <input type="number" id="param-temp" value="3500"></label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <h4><i class="fa-solid fa-plane"></i> Aerodynamics</h4>
+                            <label>Drag Coefficient (Cd): <input type="number" id="param-cd" value="0.5" step="0.1"></label>
+                            <label>Cross Area (m²): <input type="number" id="param-area" value="10"></label>
+                        </div>
+
+                        <div class="input-group">
+                            <h4><i class="fa-solid fa-gamepad"></i> Control Targets</h4>
+                            <label>Desired Accel (m/s²): <input type="number" id="param-accel" value="25"></label>
+                            <label>Max-Q Limit (Pa): <input type="number" id="param-maxq" value="40000"></label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-glow run-btn" id="run-sim-btn">
+                        <span><i class="fa-solid fa-play"></i> Run Simulation</span>
+                    </button>
+                    <!-- Loading animation spinner -->
+                    <div id="loading" class="spinner hidden"></div>
+                </form>
+            </div>
+
+            <!-- OUTPUT DASHBOARD -->
+            <div class="glass-panel output-panel">
+                <h3><i class="fa-brands fa-space-awesome"></i> Live Telemetry</h3>
+                
+                <div class="telemetry-grid">
+                    <!-- Performance -->
+                    <div class="stat-card">
+                        <h4>Performance</h4>
+                        <div class="stat-row"><span>Velocity</span> <strong class="counter" id="out-velocity">0</strong> <small>m/s</small></div>
+                        <div class="stat-row"><span>Thrust</span> <strong class="counter" id="out-thrust">0</strong> <small>kN</small></div>
+                        <div class="stat-row"><span>Dynamic Q</span> <strong class="counter" id="out-q">0</strong> <small>Pa</small></div>
+                    </div>
+
+                    <!-- Fuel -->
+                    <div class="stat-card">
+                        <h4>Fuel Monitors</h4>
+                        <div class="stat-row"><span>Flow Rate</span> <strong class="counter" id="out-flow">0</strong> <small>kg/s</small></div>
+                        <div class="stat-row"><span>Remaining Mass</span> <strong class="counter" id="out-mass">0</strong> <small>kg</small></div>
+                        
+                        <!-- Progress bar for fuel -->
+                        <div class="progress-bar-container">
+                            <span class="progress-label">Fuel Tank</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="fuel-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Engine Gauge -->
+                    <div class="stat-card">
+                        <h4>Engine Throttle</h4>
+                        <div class="throttle-gauge">
+                            <div class="gauge-center"><span id="out-throttle">0</span>%</div>
+                            <svg class="circular-chart" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" id="throttle-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart container -->
+                <div class="chart-container">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- INTELLIGENT FLIGHT ANALYSIS PANEL -->
+            <div class="glass-panel analysis-panel">
+                <h3><i class="fa-solid fa-brain"></i> System Diagnostics</h3>
+                <ul class="status-list" id="analysis-list">
+                    <li class="status-item default">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <span>Awaiting telemetry data...</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Audio for sound effect -->
+    <!-- Using a creative commons rocket thruster sound placeholder -->
+    <audio id="launch-sound" src="https://cdn.freesound.org/previews/146/146770_2437358-lq.mp3"></audio>
+
+    <script src="../static/js/script.js"></script>
+</body>
+</html>
